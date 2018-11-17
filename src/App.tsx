@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
 import { addAuthListener } from './actions';
-import { State } from './types';
+import { State, User } from './types';
 
 class App extends React.Component<AppProps> {
   componentDidMount() {
@@ -35,8 +35,8 @@ class App extends React.Component<AppProps> {
 
 interface AppProps {
   authenticating: boolean;
-  user?: { name: string; uid: string };
-  dispatch: (action: any) => void
+  user?: User;
+  dispatch: (action: any) => void;
 }
 
 const mapStateToProps = ({ authenticating, user }: State) => {
