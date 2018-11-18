@@ -5,15 +5,20 @@ import history from '../lib/history';
 import { update } from './index';
 import { State, Project } from '../types';
 
-export function createProject(projectName: string) {
+const db = firebase.firestore();
+
+export function createProject(name: string, parentProject?: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
     dispatch(update({ modalLoading: true }));
-    const id = slugify(projectName.toLowerCase());
+    const id = slugify(name.toLowerCase());
 
-    const ref = firebase
-      .firestore()
-      .collection('projects')
-      .doc(id);
+    const ref = parentProject
+      ? db
+          .collection('projects')
+          .doc(parentProject)
+          .collection('sections')
+          .doc(id)
+      : db.collection('projects').doc(id);
 
     ref
       .get()
@@ -21,14 +26,17 @@ export function createProject(projectName: string) {
         if (res.exists) {
           dispatch(
             update({
-              modalMessage: 'Project with same name already exists',
+              modalMessage: `${
+                !parentProject ? 'Project' : 'Section'
+              } with same name already exists${parentProject &&
+                ' under this project'}`,
               modalLoading: false
             })
           );
         } else {
           ref
             .set({
-              name: projectName
+              name
             })
             .then(() => {
               dispatch(
@@ -43,7 +51,10 @@ export function createProject(projectName: string) {
             .catch(error => {
               dispatch(
                 update({
-                  modalMessage: "Couldn't save project. " + error.message,
+                  modalMessage:
+                    `Couldn't save ${
+                      !parentProject ? 'project' : 'section'
+                    }. ` + error.message,
                   modalLoading: false
                 })
               );
@@ -53,7 +64,10 @@ export function createProject(projectName: string) {
       .catch(error => {
         dispatch(
           update({
-            modalMessage: "Couldn't save project. " + error.message,
+            modalMessage:
+              `Couldn't save project. ${
+                !parentProject ? 'project' : 'section'
+              }.` + error.message,
             modalLoading: false
           })
         );
@@ -64,8 +78,8 @@ export function createProject(projectName: string) {
 export function loadProject(projectID: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
     const { projects } = getState();
-    firebase
-      .firestore()
+    dispatch(update({pMessage: ''}));
+    db
       .collection('projects')
       .doc(projectID)
       .get()

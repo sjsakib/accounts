@@ -8,17 +8,18 @@ interface Props {
   showModal: boolean;
   modalLoading: boolean;
   modalMessage: string;
+  parentProject?: string;
   dispatch: (action: any) => void;
 }
 
 class CreateProject extends React.Component<Props, { name: string }> {
-
   createProject() {
     const val = this.state.name;
+    const { dispatch, parentProject } = this.props;
     if (!val) {
-      this.props.dispatch(update({ modalMessage: "Project name can't be empty" }));
+      dispatch(update({ modalMessage: "Project name can't be empty" }));
     } else if (!this.props.modalLoading) {
-      this.props.dispatch(createProject(this.state.name));
+      dispatch(createProject(this.state.name, parentProject));
     }
   }
 
@@ -29,10 +30,16 @@ class CreateProject extends React.Component<Props, { name: string }> {
   }
 
   render() {
-    const { showModal, dispatch, modalLoading, modalMessage } = this.props;
+    const {
+      showModal,
+      dispatch,
+      modalLoading,
+      modalMessage,
+      parentProject
+    } = this.props;
     return (
       <Modal size="tiny" open={showModal}>
-        <Modal.Header>Add a new project</Modal.Header>
+        <Modal.Header>Add a new {!parentProject ? 'project' : 'section'}</Modal.Header>
         <Modal.Content>
           <Form
             error={modalMessage !== ''}
@@ -43,7 +50,7 @@ class CreateProject extends React.Component<Props, { name: string }> {
             <Form.Input
               error={modalMessage !== ''}
               focus
-              label="Project name"
+              label={`${!parentProject ? 'Project' : 'Section'} name`}
               type="text"
               onChange={e => this.handleChange(e)}
             />
@@ -55,7 +62,11 @@ class CreateProject extends React.Component<Props, { name: string }> {
             <Button
               onClick={() =>
                 dispatch(
-                  update({ showModal: false, modalMessage: '', modalLoading: false })
+                  update({
+                    showModal: false,
+                    modalMessage: '',
+                    modalLoading: false
+                  })
                 )
               }>
               Cancel
@@ -73,10 +84,14 @@ class CreateProject extends React.Component<Props, { name: string }> {
   }
 }
 
-const mapStateToProps = ({ showModal, modalLoading, modalMessage }: State) => ({
+const mapStateToProps = (
+  { showModal, modalLoading, modalMessage }: State,
+  { parentProject }: { parentProject?: string }
+) => ({
   showModal,
   modalLoading,
-  modalMessage
+  modalMessage,
+  parentProject
 });
 
 export default connect(mapStateToProps)(CreateProject);

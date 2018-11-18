@@ -2,8 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
 import Decorator from './Decorator';
+import CreateProject from './CreateProject';
 import { Project, State } from '../types';
 import { loadProject, update } from '../actions';
+import { Button } from 'semantic-ui-react';
 
 interface ProjectProps {
   id: string;
@@ -14,9 +16,11 @@ interface ProjectProps {
 
 class ProjectComponent extends React.Component<ProjectProps> {
   componentDidMount() {
-    const { id, project, dispatch } = this.props;
-    if (!project) {
-      dispatch(loadProject(id));
+    this.load();
+  }
+  componentDidUpdate({ id }: ProjectProps) {
+    if (id !== this.props.id) {
+      this.load();
     }
   }
 
@@ -28,11 +32,29 @@ class ProjectComponent extends React.Component<ProjectProps> {
     );
   }
 
+  load() {
+    const { id, project, dispatch } = this.props;
+    if (!project) {
+      dispatch(loadProject(id));
+    }
+  }
+
   render() {
-    const { project, pMessage } = this.props;
+    const { project, pMessage, dispatch, id } = this.props;
     return (
       <Decorator title={project ? project.name : '....'}>
-        {pMessage ? <div>{pMessage}</div> : <div>This is project</div>}
+        {pMessage ? (
+          <div>{pMessage}</div>
+        ) : (
+          <>
+            <Button
+              circular
+              icon="add circle"
+              onClick={() => dispatch(update({ showModal: true }))}
+            />
+            <CreateProject parentProject={id} />
+          </>
+        )}
       </Decorator>
     );
   }
