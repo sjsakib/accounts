@@ -13,6 +13,10 @@ interface Props {
 }
 
 class CreateProject extends React.Component<Props, { name: string }> {
+  state = {
+    name: ''
+  }
+  
   createProject() {
     const val = this.state.name;
     const { dispatch, parentProject } = this.props;
