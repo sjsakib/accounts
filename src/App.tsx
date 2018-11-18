@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
+import Project from './components/Project';
+import Loading from './components/Loading';
 import { addAuthListener } from './actions';
 import { State, User } from './types';
+import history from './lib/history';
 
 class App extends React.Component<AppProps> {
   componentDidMount() {
@@ -13,18 +16,20 @@ class App extends React.Component<AppProps> {
 
   render() {
     const { authenticating, user } = this.props;
+    return <Loading />
     return (
       <>
         {user === undefined ? (
           authenticating ? (
-            <div>Loading</div>
+            <Loading />
           ) : (
             <Login />
           )
         ) : (
-          <Router>
+          <Router history={history}>
             <>
               <Route path="/" exact component={Home} />
+              <Route path="/project/:id" exact component={Project} />
             </>
           </Router>
         )}
