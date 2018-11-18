@@ -16,7 +16,6 @@ class App extends React.Component<AppProps> {
 
   render() {
     const { authenticating, user } = this.props;
-    return <Loading />
     return (
       <>
         {user === undefined ? (

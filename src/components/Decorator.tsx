@@ -7,11 +7,12 @@ import firebase from '../lib/firebase';
 const Decorator: React.SFC<{
   user?: User;
   title: string;
-}> = function({ children, user }) {
+}> = function({ children, user, title }) {
   return (
     <Container>
       <Menu>
-        <Menu.Item header>Prodhan's Trading Accounts</Menu.Item>
+        <Menu.Item header>Prodhan's Accounts</Menu.Item>
+        <Menu.Item header>{title}</Menu.Item>
         <Menu.Menu position="right">
           {user && (
             <>

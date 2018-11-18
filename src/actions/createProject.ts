@@ -3,7 +3,7 @@ import slugify from 'slugify';
 import firebase from '../lib/firebase';
 import history from '../lib/history';
 import { update } from './index';
-import { State } from '../types';
+import { State, Project } from '../types';
 
 export function createProject(projectName: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
@@ -32,9 +32,13 @@ export function createProject(projectName: string) {
             })
             .then(() => {
               dispatch(
-                update({ modalMessage: '', showModal: false, modalLoading: false })
+                update({
+                  modalMessage: '',
+                  showModal: false,
+                  modalLoading: false
+                })
               );
-              history.push('/project/'+ id);
+              history.push('/project/' + id);
             })
             .catch(error => {
               dispatch(
@@ -51,6 +55,42 @@ export function createProject(projectName: string) {
           update({
             modalMessage: "Couldn't save project. " + error.message,
             modalLoading: false
+          })
+        );
+      });
+  };
+}
+
+export function loadProject(projectID: string) {
+  return function(dispatch: Dispatch<Action>, getState: () => State) {
+    const { projects } = getState();
+    firebase
+      .firestore()
+      .collection('projects')
+      .doc(projectID)
+      .get()
+      .then(res => {
+        if (res.exists) {
+          dispatch(
+            update({
+              projects: {
+                ...projects,
+                ...{ [projectID]: res.data() as Project }
+              }
+            })
+          );
+        } else {
+          dispatch(
+            update({
+              pMessage: "Project doesn't exits"
+            })
+          );
+        }
+      })
+      .catch(error => {
+        dispatch(
+          update({
+            pMessage: "Couldn't load project" + error.message
           })
         );
       });

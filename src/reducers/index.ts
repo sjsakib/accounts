@@ -6,7 +6,8 @@ const initialState = {
   authenticating: true,
   showModal: false,
   modalLoading: false,
-  modalMessage: ''
+  modalMessage: '',
+  projects: {}
 };
 
 export default function(

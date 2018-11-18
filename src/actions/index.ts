@@ -35,4 +35,4 @@ export function addAuthListener(
   });
 }
 
-export { createProject } from './createProject';
+export * from './createProject';

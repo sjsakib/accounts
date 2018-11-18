@@ -1,20 +1,53 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { match } from 'react-router';
 import Decorator from './Decorator';
+import { Project, State } from '../types';
+import { loadProject, update } from '../actions';
 
 interface ProjectProps {
-  match: match<{ id: string }>;
+  id: string;
+  pMessage?: string;
+  project?: Project;
+  dispatch: (action: any) => void;
 }
 
-class Project extends React.Component<ProjectProps> {
+class ProjectComponent extends React.Component<ProjectProps> {
+  componentDidMount() {
+    const { id, project, dispatch } = this.props;
+    if (!project) {
+      dispatch(loadProject(id));
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch(
+      update({
+        pMessage: ''
+      })
+    );
+  }
+
   render() {
-    const id = this.props.match.params.id;
+    const { project, pMessage } = this.props;
     return (
-      <Decorator title="id">
-        <div>This is project {id}</div>
+      <Decorator title={project ? project.name : '....'}>
+        {pMessage ? <div>{pMessage}</div> : <div>This is project</div>}
       </Decorator>
     );
   }
 }
 
-export default Project;
+const mapStateToProps = (
+  { projects, pMessage }: State,
+  { match }: { match: match<{ id: string }> }
+) => {
+  const id = match.params.id;
+  return {
+    project: projects[id],
+    id,
+    pMessage
+  };
+};
+
+export default connect(mapStateToProps)(ProjectComponent);
