@@ -6,7 +6,31 @@ export interface User {
 
 export interface Project {
   name: string;
+  sections: Section[]
 }
+
+export interface Section {
+  name: string;
+  entries: {
+    [key: string]: Entry;
+  };
+}
+
+export interface Entry {
+  name: string;
+  type: string;
+  amount?: number;
+  note?: string;
+  created: Date;
+}
+
+export const EntryTypes = {
+  IN: 'IN',
+  OUT: 'OUT',
+  DUE: 'DUE',
+  DEBT: 'DEBT',
+  NOTE: 'NOTE',
+};
 
 export interface State {
   showModal: boolean;

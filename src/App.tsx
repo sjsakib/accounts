@@ -4,6 +4,7 @@ import { Router, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Login from './components/Login';
 import Project from './components/Project';
+import Section from './components/Section';
 import Loading from './components/Loading';
 import { addAuthListener } from './actions';
 import { State, User } from './types';
@@ -29,6 +30,7 @@ class App extends React.Component<AppProps> {
             <>
               <Route path="/" exact component={Home} />
               <Route path="/project/:id" exact component={Project} />
+              <Route path="/project/:parentID/:id" exact component={Section} />
             </>
           </Router>
         )}

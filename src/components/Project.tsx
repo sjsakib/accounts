@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { match } from 'react-router';
 import Decorator from './Decorator';
 import CreateProject from './CreateProject';
+import Loading from './Loading';
 import { Project, State } from '../types';
 import { loadProject, update } from '../actions';
 import { Button } from 'semantic-ui-react';
@@ -41,8 +42,11 @@ class ProjectComponent extends React.Component<ProjectProps> {
 
   render() {
     const { project, pMessage, dispatch, id } = this.props;
+    if (!project) {
+      return <Loading />;
+    }
     return (
-      <Decorator title={project ? project.name : '....'}>
+      <Decorator title={project.name}>
         {pMessage ? (
           <div>{pMessage}</div>
         ) : (

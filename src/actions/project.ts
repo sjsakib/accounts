@@ -3,7 +3,7 @@ import slugify from 'slugify';
 import firebase from '../lib/firebase';
 import history from '../lib/history';
 import { update } from './index';
-import { State, Project } from '../types';
+import { State, Project, Section } from '../types';
 
 const db = firebase.firestore();
 
@@ -24,12 +24,13 @@ export function createProject(name: string, parentProject?: string) {
       .get()
       .then(res => {
         if (res.exists) {
+          const modalMessage = `${
+            !parentProject ? 'Project' : 'Section'
+          } with same name already exists${parentProject &&
+            ' under this project'}`;
           dispatch(
             update({
-              modalMessage: `${
-                !parentProject ? 'Project' : 'Section'
-              } with same name already exists${parentProject &&
-                ' under this project'}`,
+              modalMessage,
               modalLoading: false
             })
           );
@@ -46,7 +47,11 @@ export function createProject(name: string, parentProject?: string) {
                   modalLoading: false
                 })
               );
-              history.push('/project/' + id);
+              if (parentProject) {
+                history.push(`/project/${parentProject}/${id}`);
+              } else {
+                history.push('/project/' + id);
+              }
             })
             .catch(error => {
               dispatch(
@@ -78,7 +83,7 @@ export function createProject(name: string, parentProject?: string) {
 export function loadProject(projectID: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
     const { projects } = getState();
-    dispatch(update({pMessage: ''}));
+    dispatch(update({ pMessage: '' }));
     db
       .collection('projects')
       .doc(projectID)
@@ -104,9 +109,70 @@ export function loadProject(projectID: string) {
       .catch(error => {
         dispatch(
           update({
-            pMessage: "Couldn't load project" + error.message
+            pMessage: "Couldn't load project. " + error.message
           })
         );
       });
   };
+}
+
+export function loadSection(id: string, parentID: string) {
+  return async function(dispatch: Dispatch<Action>, getState: () => State) {
+    dispatch(pMessage(''));
+
+    const { projects } = getState();
+    let project = projects[parentID];
+
+    const projectRef = db.collection('projects').doc(parentID);
+
+    if (!project) {
+      try {
+        const projectData = await projectRef.get();
+        if (!projectData.exists) {
+          dispatch(pMessage("Project doesn't exits"));
+          return;
+        } else {
+          project = projectData.data() as Project;
+        }
+      } catch (e) {
+        dispatch(pMessage("Couldn't load section"));
+        return;
+      }
+    }
+
+    projectRef
+      .collection('sections')
+      .doc(id)
+      .get()
+      .then(res => {
+        if (!res.exists) {
+          dispatch(pMessage("Project or section doesn't exits"));
+          return;
+        }
+        const updates = {
+          projects: {
+            ...projects,
+            ...{
+              [parentID]: {
+                ...project,
+                ...{
+                  sections: {
+                    ...project.sections,
+                    ...{ [id]: res.data() as Section }
+                  }
+                }
+              }
+            }
+          }
+        };
+        dispatch(update(updates));
+      })
+      .catch(error => {
+        dispatch(pMessage("Couldn't load section. " + error.message));
+      });
+  };
+}
+
+function pMessage(message: string) {
+  return update({ pMessage: message });
 }
