@@ -15,7 +15,16 @@ class Home extends React.Component<HomeProps> {
     const { dispatch, projects } = this.props;
     return (
       <Decorator title="Prodhan's Accounts">
-        <Grid centered columns={2}>
+        <Grid centered stackable columns={2}>
+          <Grid.Row centered>
+            <Grid.Column textAlign="center">
+            <Button
+              circular
+              icon="add circle"
+              onClick={() => dispatch(update({ showModal: true }))}
+            />
+            </Grid.Column>
+          </Grid.Row>
           <Grid.Column>
             {Object.keys(projects).map(k => (
               <Card
@@ -27,13 +36,6 @@ class Home extends React.Component<HomeProps> {
               />
             ))}
           </Grid.Column>
-          <Grid.Row>
-            <Button
-              circular
-              icon="add circle"
-              onClick={() => dispatch(update({ showModal: true }))}
-            />
-           </Grid.Row>
         </Grid>
         <CreateProject />
       </Decorator>

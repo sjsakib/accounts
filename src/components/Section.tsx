@@ -81,6 +81,13 @@ class SectionComponent extends React.Component<Props> {
         ) : (
           <Grid centered>
             <Grid.Row>
+              <Grid.Column>
+                <Button
+                  circular
+                  icon="add circle"
+                  onClick={() => dispatch(update({ showModal: true }))}
+                />
+              </Grid.Column>
               <Table unstackable>
                 <Table.Header>
                   <Table.Row>
@@ -93,11 +100,6 @@ class SectionComponent extends React.Component<Props> {
                 <Table.Body>{rows}</Table.Body>
               </Table>
             </Grid.Row>
-            <Button
-              circular
-              icon="add circle"
-              onClick={() => dispatch(update({ showModal: true }))}
-            />
             <EditEntry projectID={parentID} sectionID={id} />
           </Grid>
         )}

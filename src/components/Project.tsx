@@ -54,6 +54,15 @@ class ProjectComponent extends React.Component<ProjectProps> {
           <div>{pMessage}</div>
         ) : (
           <Grid centered columns={2} stackable>
+            <Grid.Row>
+              <Grid.Column textAlign="center">
+                <Button
+                  circular
+                  icon="add circle"
+                  onClick={() => dispatch(update({ showModal: true }))}
+                />
+              </Grid.Column>
+            </Grid.Row>
             <Grid.Column>
               {sections &&
                 Object.keys(sections).map(k => (
@@ -66,13 +75,6 @@ class ProjectComponent extends React.Component<ProjectProps> {
                   />
                 ))}
             </Grid.Column>
-            <Grid.Row>
-              <Button
-                circular
-                icon="add circle"
-                onClick={() => dispatch(update({ showModal: true }))}
-              />
-            </Grid.Row>
             <CreateProject parentProject={id} />
           </Grid>
         )}
