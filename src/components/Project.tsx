@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { match } from 'react-router';
 import Decorator from './Decorator';
 import CreateProject from './CreateProject';
 import Loading from './Loading';
 import { Project, State } from '../types';
 import { loadProject, update } from '../actions';
-import { Button } from 'semantic-ui-react';
+import { Button, Grid, Card } from 'semantic-ui-react';
 
 interface ProjectProps {
   id: string;
@@ -35,29 +36,45 @@ class ProjectComponent extends React.Component<ProjectProps> {
 
   load() {
     const { id, project, dispatch } = this.props;
-    if (!project) {
+
+    if (!project || !project.sections) {
       dispatch(loadProject(id));
     }
   }
 
   render() {
     const { project, pMessage, dispatch, id } = this.props;
-    if (!project) {
+    const sections = project && project.sections;
+    if (!project && pMessage === '') {
       return <Loading />;
     }
     return (
-      <Decorator title={project.name}>
+      <Decorator title={project ? project.name : 'Error'}>
         {pMessage ? (
           <div>{pMessage}</div>
         ) : (
-          <>
-            <Button
-              circular
-              icon="add circle"
-              onClick={() => dispatch(update({ showModal: true }))}
-            />
+          <Grid centered columns={2} stackable>
+            <Grid.Column>
+              {sections &&
+                Object.keys(sections).map(k => (
+                  <Card
+                    key={k}
+                    as={Link}
+                    to={`project/${k}`}
+                    header={sections[k].name}
+                    fluid
+                  />
+                ))}
+            </Grid.Column>
+            <Grid.Row>
+              <Button
+                circular
+                icon="add circle"
+                onClick={() => dispatch(update({ showModal: true }))}
+              />
+            </Grid.Row>
             <CreateProject parentProject={id} />
-          </>
+          </Grid>
         )}
       </Decorator>
     );

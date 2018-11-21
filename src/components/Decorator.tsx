@@ -11,7 +11,6 @@ const Decorator: React.SFC<{
   return (
     <Container>
       <Menu>
-        <Menu.Item header>Prodhan's Accounts</Menu.Item>
         <Menu.Item header>{title}</Menu.Item>
         <Menu.Menu position="right">
           {user && (

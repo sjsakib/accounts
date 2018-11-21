@@ -6,7 +6,9 @@ export interface User {
 
 export interface Project {
   name: string;
-  sections: Section[]
+  sections: {
+    [key: string]: Section;
+  };
 }
 
 export interface Section {
@@ -29,7 +31,7 @@ export const EntryTypes = {
   OUT: 'OUT',
   DUE: 'DUE',
   DEBT: 'DEBT',
-  NOTE: 'NOTE',
+  NOTE: 'NOTE'
 };
 
 export interface State {

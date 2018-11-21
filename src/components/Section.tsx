@@ -4,9 +4,9 @@ import { match } from 'react-router';
 import Decorator from './Decorator';
 import EditEntry from './EditEntry';
 import Loading from './Loading';
-import { Section, State } from '../types';
+import { Section, State, EntryTypes } from '../types';
 import { loadSection, update } from '../actions';
-import { Button, Message } from 'semantic-ui-react';
+import { Button, Message, Grid, Table } from 'semantic-ui-react';
 
 interface Props {
   id: string;
@@ -36,31 +36,70 @@ class SectionComponent extends React.Component<Props> {
 
   load() {
     const { id, parentID, section, dispatch } = this.props;
-    if (!section) {
+    if (!section || !section.entries) {
       dispatch(loadSection(id, parentID));
     }
   }
 
   render() {
     const { section, pMessage, dispatch, id, parentID } = this.props;
+    const entries = section && section.entries;
 
-    if (!section) {
+    if (!section && pMessage === '') {
       return <Loading />;
     }
 
+    const rows =
+      entries &&
+      Object.keys(entries).map(k => {
+        const e = entries[k];
+        const created = e.created.toLocaleDateString('en-US');
+        const warning = e.type === EntryTypes.OUT;
+        const negative = e.type === EntryTypes.DUE;
+        const positive = e.type === EntryTypes.IN;
+        const error = e.type === EntryTypes.DEBT;
+
+        return (
+          <Table.Row
+            key={k}
+            warning={warning}
+            error={error}
+            positive={positive}
+            negative={negative}>
+            <Table.Cell>{e.name}</Table.Cell>
+            <Table.Cell>{e.type}</Table.Cell>
+            <Table.Cell>{e.amount}</Table.Cell>
+            <Table.Cell>{created}</Table.Cell>
+          </Table.Row>
+        );
+      });
+
     return (
-      <Decorator title={section.name}>
+      <Decorator title={section ? section.name : 'Error'}>
         {pMessage ? (
           <Message error content={pMessage} />
         ) : (
-          <>
+          <Grid centered>
+            <Grid.Row>
+              <Table unstackable>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>Name</Table.HeaderCell>
+                    <Table.HeaderCell>Type</Table.HeaderCell>
+                    <Table.HeaderCell>Amount</Table.HeaderCell>
+                    <Table.HeaderCell>Date</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>{rows}</Table.Body>
+              </Table>
+            </Grid.Row>
             <Button
               circular
               icon="add circle"
               onClick={() => dispatch(update({ showModal: true }))}
             />
             <EditEntry projectID={parentID} sectionID={id} />
-          </>
+          </Grid>
         )}
       </Decorator>
     );

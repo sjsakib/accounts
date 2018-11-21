@@ -17,7 +17,7 @@ interface FormState {
   name: string;
   nameError: string;
   type: string;
-  amount: number;
+  amount?: number;
   amountError: string;
   note: string;
 }
@@ -29,7 +29,6 @@ class EditEntry extends React.Component<Props, FormState> {
       name: '',
       nameError: '',
       type: EntryTypes.NOTE,
-      amount: 0,
       amountError: '',
       note: ''
     };
@@ -68,13 +67,13 @@ class EditEntry extends React.Component<Props, FormState> {
 
   render() {
     const { showModal, dispatch, modalLoading, modalMessage } = this.props;
-    const { type, name, nameError, amountError, amount, note } = this.state;
+    const { type, nameError, amountError } = this.state;
     const typeOptions = [
-      { text: 'Note', value: EntryTypes.NOTE, key: EntryTypes.NOTE },
-      { text: 'Income', value: EntryTypes.IN, key: EntryTypes.IN },
-      { text: 'Expense', value: EntryTypes.OUT, key: EntryTypes.OUT },
-      { text: 'Due', value: EntryTypes.DUE, key: EntryTypes.DUE },
-      { text: 'Debt', value: EntryTypes.DEBT, key: EntryTypes.DEBT }
+      { text: 'Note', value: EntryTypes.NOTE },
+      { text: 'Income', value: EntryTypes.IN },
+      { text: 'Expense', value: EntryTypes.OUT },
+      { text: 'Due', value: EntryTypes.DUE },
+      { text: 'Debt', value: EntryTypes.DEBT }
     ];
     return (
       <Modal size="tiny" open={showModal}>
@@ -89,7 +88,6 @@ class EditEntry extends React.Component<Props, FormState> {
             <Form.Input
               error={nameError !== ''}
               focus
-              value={name}
               label="Name"
               type="text"
               onChange={e => {
@@ -100,7 +98,6 @@ class EditEntry extends React.Component<Props, FormState> {
             {nameError !== '' && <Message error content={nameError} />}
             <Form.Group className="evenly-spaced">
               <Form.Select
-                value={this.state.type}
                 label="Type"
                 options={typeOptions}
                 onChange={(e, d) =>
@@ -113,7 +110,6 @@ class EditEntry extends React.Component<Props, FormState> {
                     error={amountError !== ''}
                     label="Amount"
                     type="number"
-                    value={amount}
                     onChange={e => {
                       this.setState({
                         amount: Number(e.target.value),
@@ -130,7 +126,6 @@ class EditEntry extends React.Component<Props, FormState> {
             </Form.Group>
             <Form.TextArea
               label="Note"
-              value={note}
               onChange={(e, d) => this.setState({ note: d.value as string })}
             />
 
