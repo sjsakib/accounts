@@ -26,8 +26,9 @@ class Login extends React.Component<{}, { loadingUI: boolean }> {
 
   render() {
     return (
-      <div>
-        Sign in to continue
+      <div className="login-container">
+        <h1>Welcome to Prodhan's Accounts</h1>
+        <p>Sign in to continue</p>
         <div id="firebaseui-auth-container" />
       </div>
     );

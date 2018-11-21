@@ -10,3 +10,12 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
