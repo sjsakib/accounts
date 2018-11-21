@@ -40,7 +40,7 @@ export function updateEntry(
             .catch(error => {
               dispatch(
                 update({
-                  modalMessage: "Couldn't save entry",
+                  modalMessage: "Couldn't save entry. " + error.message,
                   modalLoading: false
                 })
               );
@@ -57,7 +57,7 @@ export function updateEntry(
       .catch(error => {
         dispatch(
           update({
-            modalMessage: "Couldn't save entry",
+            modalMessage: "Couldn't save entry. " + error.message,
             modalLoading: false
           })
         );

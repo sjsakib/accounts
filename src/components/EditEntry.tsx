@@ -28,7 +28,8 @@ class EditEntry extends React.Component<Props, FormState> {
     this.state = {
       name: '',
       nameError: '',
-      type: EntryTypes.NOTE,
+      type: EntryTypes.OUT,
+      amount: 0,
       amountError: '',
       note: ''
     };
@@ -99,6 +100,7 @@ class EditEntry extends React.Component<Props, FormState> {
             <Form.Group className="evenly-spaced">
               <Form.Select
                 label="Type"
+                value={type}
                 options={typeOptions}
                 onChange={(e, d) =>
                   this.setState({ type: (d.value as string).trim() })
