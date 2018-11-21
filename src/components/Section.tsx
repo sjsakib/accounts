@@ -53,7 +53,13 @@ class SectionComponent extends React.Component<Props> {
       entries &&
       Object.keys(entries).map(k => {
         const e = entries[k];
-        const created = e.created.toLocaleDateString('en-US');
+        const created = e.created.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
         const warning = e.type === EntryTypes.OUT;
         const negative = e.type === EntryTypes.DUE;
         const positive = e.type === EntryTypes.IN;
@@ -66,10 +72,12 @@ class SectionComponent extends React.Component<Props> {
             error={error}
             positive={positive}
             negative={negative}>
-            <Table.Cell>{e.name}</Table.Cell>
+            <Table.Cell>
+              {e.name} <br /> <small>{created}</small> <br />
+              <small>{e.note}</small>
+            </Table.Cell>
             <Table.Cell>{e.type}</Table.Cell>
-            <Table.Cell>{e.amount}</Table.Cell>
-            <Table.Cell>{created}</Table.Cell>
+            <Table.Cell>{e.amount ? e.amount : '--'}</Table.Cell>
           </Table.Row>
         );
       });
@@ -88,13 +96,12 @@ class SectionComponent extends React.Component<Props> {
                   onClick={() => dispatch(update({ showModal: true }))}
                 />
               </Grid.Column>
-              <Table unstackable>
+              <Table unstackable compact>
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Type</Table.HeaderCell>
                     <Table.HeaderCell>Amount</Table.HeaderCell>
-                    <Table.HeaderCell>Date</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>{rows}</Table.Body>

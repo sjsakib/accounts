@@ -18,11 +18,11 @@ class Home extends React.Component<HomeProps> {
         <Grid centered stackable columns={2}>
           <Grid.Row centered>
             <Grid.Column textAlign="center">
-            <Button
-              circular
-              icon="add circle"
-              onClick={() => dispatch(update({ showModal: true }))}
-            />
+              <Button
+                circular
+                icon="add circle"
+                onClick={() => dispatch(update({ showModal: true }))}
+              />
             </Grid.Column>
           </Grid.Row>
           <Grid.Column>
