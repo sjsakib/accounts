@@ -37,3 +37,4 @@ export function addAuthListener(
 
 export * from './project';
 export * from './entry';
+export * from './delete';

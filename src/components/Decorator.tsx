@@ -8,10 +8,11 @@ import firebase from '../lib/firebase';
 const Decorator: React.SFC<{
   user?: User;
   title: string;
-}> = function({ children, user, title }) {
+  menuItems?: React.ReactNode;
+}> = function({ children, user, title, menuItems }) {
   return (
     <Container>
-      <Menu borderless>
+      <Menu borderless fluid>
         <Menu.Item header as={Link} to="/">
           <Icon name="home" />
         </Menu.Item>
@@ -20,8 +21,7 @@ const Decorator: React.SFC<{
           {user && (
             <Menu.Item>
               <Dropdown
-                simple
-                pointring="left"
+                pointing="top right"
                 icon={null}
                 trigger={<Image src={user.photoURL} avatar />}>
                 <Dropdown.Menu>
@@ -30,6 +30,18 @@ const Decorator: React.SFC<{
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
+              {menuItems && (
+                <Menu.Item>
+                  <Dropdown
+                    pointing="top right"
+                    icon="ellipsis vertical"
+                    >
+                    <Dropdown.Menu>
+                      {menuItems}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Menu.Item>
+              )}
             </Menu.Item>
           )}
         </Menu.Menu>

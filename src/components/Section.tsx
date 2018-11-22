@@ -54,7 +54,7 @@ class SectionComponent extends React.Component<Props> {
     } = this.props;
     const entries = section && section.entries;
 
-    if ((!section && pMessage === '') || (!entries && emptyMessage === '')) {
+    if (pMessage === '' && (!section || (!entries && emptyMessage === ''))) {
       return <Loading />;
     }
 

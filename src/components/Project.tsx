@@ -6,8 +6,8 @@ import Decorator from './Decorator';
 import CreateProject from './CreateProject';
 import Loading from './Loading';
 import { Project, State } from '../types';
-import { loadProject, update } from '../actions';
-import { Button, Grid, Card } from 'semantic-ui-react';
+import { loadProject, update, deleteProject } from '../actions';
+import { Button, Grid, Card, Dropdown, Confirm, Message } from 'semantic-ui-react';
 
 interface ProjectProps {
   id: string;
@@ -17,7 +17,11 @@ interface ProjectProps {
   dispatch: (action: any) => void;
 }
 
-class ProjectComponent extends React.Component<ProjectProps> {
+class ProjectComponent extends React.Component<
+  ProjectProps,
+  { delete?: boolean }
+> {
+  state = { delete: false}
   componentDidMount() {
     this.load();
   }
@@ -31,7 +35,7 @@ class ProjectComponent extends React.Component<ProjectProps> {
     this.props.dispatch(
       update({
         pMessage: '',
-        emptyMessage: '',
+        emptyMessage: ''
       })
     );
   }
@@ -47,13 +51,19 @@ class ProjectComponent extends React.Component<ProjectProps> {
   render() {
     const { project, pMessage, dispatch, id, emptyMessage } = this.props;
     const sections = project && project.sections;
-    if ((!project && pMessage === '') || (!sections && emptyMessage === '')) {
+    if (pMessage === '' && (!project || (!sections && emptyMessage === ''))) {
       return <Loading />;
     }
     return (
-      <Decorator title={project ? project.name : 'Error'}>
+      <Decorator
+        title={project ? project.name : 'Error'}
+        menuItems={
+          <Dropdown.Item onClick={() => this.setState({ delete: true })}>
+            Delete project
+          </Dropdown.Item>
+        }>
         {pMessage ? (
-          <div>{pMessage}</div>
+          <Message content={pMessage} error />
         ) : (
           <Grid centered columns={2} stackable>
             <Grid.Row>
@@ -79,6 +89,11 @@ class ProjectComponent extends React.Component<ProjectProps> {
               {emptyMessage}
             </Grid.Column>
             <CreateProject parentProject={id} />
+            <Confirm
+              open={this.state.delete}
+              onConfirm={() => dispatch(deleteProject(id))}
+              onCancel={() => this.setState({ delete: false })}
+            />
           </Grid>
         )}
       </Decorator>
