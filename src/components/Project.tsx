@@ -69,7 +69,7 @@ class ProjectComponent extends React.Component<ProjectProps> {
                   <Card
                     key={k}
                     as={Link}
-                    to={`project/${k}`}
+                    to={`/project/${id}/${k}`}
                     header={sections[k].name}
                     fluid
                   />
