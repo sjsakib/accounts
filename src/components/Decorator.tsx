@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Menu, Container, Button } from 'semantic-ui-react';
+import { Menu, Container, Icon, Image, Dropdown } from 'semantic-ui-react';
 import { User, State } from '../types';
 import firebase from '../lib/firebase';
 
@@ -11,20 +11,27 @@ const Decorator: React.SFC<{
 }> = function({ children, user, title }) {
   return (
     <Container>
-      <Menu>
-        <Menu.Item header as={Link} to ="/">Home</Menu.Item>
+      <Menu borderless>
+        <Menu.Item header as={Link} to="/">
+          <Icon name="home" />
+        </Menu.Item>
         <Menu.Item header>{title}</Menu.Item>
         <Menu.Menu position="right">
           {user && (
-            <>
-              <Menu.Item header>{user.name}</Menu.Item>
-              <Menu.Item>
-                <Button onClick={() => firebase.auth().signOut()}>
-                  Log out
-                </Button>
-              </Menu.Item>
-            </>
-          )} 
+            <Menu.Item>
+              <Dropdown
+                simple
+                pointring="left"
+                icon={null}
+                trigger={<Image src={user.photoURL} avatar />}>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => firebase.auth().signOut()}>
+                    Sign Out
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Item>
+          )}
         </Menu.Menu>
       </Menu>
       {children}

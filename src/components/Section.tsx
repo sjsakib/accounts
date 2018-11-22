@@ -89,13 +89,13 @@ class SectionComponent extends React.Component<Props> {
         ) : (
           <Grid centered>
             <Grid.Row>
-              <Grid.Column>
+              <Grid.Row>
                 <Button
                   circular
                   icon="add circle"
                   onClick={() => dispatch(update({ showModal: true }))}
                 />
-              </Grid.Column>
+              </Grid.Row>
               <Table unstackable compact>
                 <Table.Header>
                   <Table.Row>
