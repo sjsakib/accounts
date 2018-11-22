@@ -12,6 +12,7 @@ interface Props {
   id: string;
   parentID: string;
   pMessage?: string;
+  emptyMessage: string;
   section?: Section;
   dispatch: (action: any) => void;
 }
@@ -29,7 +30,8 @@ class SectionComponent extends React.Component<Props> {
   componentWillUnmount() {
     this.props.dispatch(
       update({
-        pMessage: ''
+        pMessage: '',
+        emptyMessage: ''
       })
     );
   }
@@ -42,10 +44,17 @@ class SectionComponent extends React.Component<Props> {
   }
 
   render() {
-    const { section, pMessage, dispatch, id, parentID } = this.props;
+    const {
+      section,
+      pMessage,
+      dispatch,
+      id,
+      parentID,
+      emptyMessage
+    } = this.props;
     const entries = section && section.entries;
 
-    if (!section && pMessage === '') {
+    if ((!section && pMessage === '') || (!entries && emptyMessage === '')) {
       return <Loading />;
     }
 
@@ -81,6 +90,15 @@ class SectionComponent extends React.Component<Props> {
           </Table.Row>
         );
       });
+    const emptyRow = emptyMessage ? (
+      <Table.Row>
+        <Table.Cell textAlign="center" colSpan="3">
+          {emptyMessage}
+        </Table.Cell>
+      </Table.Row>
+    ) : (
+      ''
+    );
 
     return (
       <Decorator title={section ? section.name : 'Error'}>
@@ -104,7 +122,10 @@ class SectionComponent extends React.Component<Props> {
                     <Table.HeaderCell>Amount</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
-                <Table.Body>{rows}</Table.Body>
+                <Table.Body>
+                  {rows}
+                  {emptyRow}
+                </Table.Body>
               </Table>
             </Grid.Row>
             <EditEntry projectID={parentID} sectionID={id} />
@@ -116,7 +137,7 @@ class SectionComponent extends React.Component<Props> {
 }
 
 const mapStateToProps = (
-  { projects, pMessage }: State,
+  { projects, pMessage, emptyMessage }: State,
   { match }: { match: match<{ id: string; parentID: string }> }
 ) => {
   const { id, parentID } = match.params;
@@ -124,7 +145,8 @@ const mapStateToProps = (
     section: projects[parentID] && projects[parentID].sections[id],
     parentID,
     id,
-    pMessage
+    pMessage,
+    emptyMessage
   };
 };
 

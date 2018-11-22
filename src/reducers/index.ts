@@ -7,6 +7,7 @@ const initialState = {
   showModal: false,
   modalLoading: false,
   modalMessage: '',
+  emptyMessage: '',
   projects: {}
 };
 

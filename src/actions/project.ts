@@ -243,6 +243,11 @@ export function loadEntries(projectID: string, sectionID: string) {
       .doc(sectionID)
       .collection('entries')
       .onSnapshot(query => {
+        if (query.empty) {
+          dispatch(update({emptyMessage: 'No entries so far'}));
+        } else {
+          dispatch(update({emptyMessage: ''}));
+        }
         query.docChanges().forEach(change => {
           const id = change.doc.id;
           const { projects } = getState();

@@ -40,6 +40,7 @@ export interface State {
   modalMessage: string;
   authenticating: boolean;
   pMessage?: string;
+  emptyMessage: string;
   user?: User;
   projects: {
     [key: string]: Project;
