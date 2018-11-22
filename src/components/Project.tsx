@@ -12,6 +12,7 @@ import { Button, Grid, Card } from 'semantic-ui-react';
 interface ProjectProps {
   id: string;
   pMessage?: string;
+  emptyMessage: string;
   project?: Project;
   dispatch: (action: any) => void;
 }
@@ -29,7 +30,8 @@ class ProjectComponent extends React.Component<ProjectProps> {
   componentWillUnmount() {
     this.props.dispatch(
       update({
-        pMessage: ''
+        pMessage: '',
+        emptyMessage: '',
       })
     );
   }
@@ -43,9 +45,9 @@ class ProjectComponent extends React.Component<ProjectProps> {
   }
 
   render() {
-    const { project, pMessage, dispatch, id } = this.props;
+    const { project, pMessage, dispatch, id, emptyMessage } = this.props;
     const sections = project && project.sections;
-    if (!project && pMessage === '') {
+    if ((!project && pMessage === '') || (!sections && emptyMessage === '')) {
       return <Loading />;
     }
     return (
@@ -63,7 +65,7 @@ class ProjectComponent extends React.Component<ProjectProps> {
                 />
               </Grid.Column>
             </Grid.Row>
-            <Grid.Column>
+            <Grid.Column textAlign="center">
               {sections &&
                 Object.keys(sections).map(k => (
                   <Card
@@ -74,6 +76,7 @@ class ProjectComponent extends React.Component<ProjectProps> {
                     fluid
                   />
                 ))}
+              {emptyMessage}
             </Grid.Column>
             <CreateProject parentProject={id} />
           </Grid>
@@ -84,14 +87,15 @@ class ProjectComponent extends React.Component<ProjectProps> {
 }
 
 const mapStateToProps = (
-  { projects, pMessage }: State,
+  { projects, pMessage, emptyMessage }: State,
   { match }: { match: match<{ id: string }> }
 ) => {
   const id = match.params.id;
   return {
     project: projects[id],
     id,
-    pMessage
+    pMessage,
+    emptyMessage
   };
 };
 

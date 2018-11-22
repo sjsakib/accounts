@@ -206,6 +206,11 @@ export function loadSections(projectID: string) {
       .doc(projectID)
       .collection('sections')
       .onSnapshot(query => {
+        if (query.empty) {
+          dispatch(update({emptyMessage: 'No Section so far'}));
+        } else {
+          dispatch(update({emptyMessage: ''}));
+        }
         query.docChanges().forEach(change => {
           const { projects } = getState();
           const project = projects[projectID];
