@@ -100,19 +100,17 @@ class SectionComponent extends React.Component<
             hour: '2-digit',
             minute: '2-digit'
           });
-          const warning = e.type === EntryTypes.OUT;
-          const negative = e.type === EntryTypes.DUE;
+          const warning = e.type === EntryTypes.DUE;
+          const negative = e.type === EntryTypes.DEBT;
           const positive = e.type === EntryTypes.IN;
-          const error = e.type === EntryTypes.DEBT;
 
           return (
             <Table.Row
               key={k}
               warning={warning}
-              error={error}
               positive={positive}
               negative={negative}>
-              <Table.Cell>
+              <Table.Cell className="pre-line">
                 {e.name} <br /> <small>{created}</small> <br />
                 <small>{e.note}</small>
               </Table.Cell>
@@ -194,7 +192,7 @@ class SectionComponent extends React.Component<
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell colSpan="2" textAlign="right">
-                      Summary
+                      Summary:
                     </Table.HeaderCell>
                     <Table.HeaderCell>{total}</Table.HeaderCell>
                   </Table.Row>

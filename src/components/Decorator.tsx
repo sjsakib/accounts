@@ -25,6 +25,9 @@ const Decorator: React.SFC<{
                 icon={null}
                 trigger={<Image src={user.photoURL} avatar />}>
                 <Dropdown.Menu>
+                  <Dropdown.Item>
+                    {user.name}
+                  </Dropdown.Item>
                   <Dropdown.Item onClick={() => firebase.auth().signOut()}>
                     Sign Out
                   </Dropdown.Item>
@@ -32,13 +35,8 @@ const Decorator: React.SFC<{
               </Dropdown>
               {menuItems && (
                 <Menu.Item>
-                  <Dropdown
-                    pointing="top right"
-                    icon="ellipsis vertical"
-                    >
-                    <Dropdown.Menu>
-                      {menuItems}
-                    </Dropdown.Menu>
+                  <Dropdown pointing="top right" icon="ellipsis vertical">
+                    <Dropdown.Menu>{menuItems}</Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>
               )}

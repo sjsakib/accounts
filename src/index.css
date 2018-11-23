@@ -37,3 +37,7 @@ body {
 .cursor-pointer {
   cursor: pointer !important;
 }
+
+.pre-line {
+  white-space: pre-line;
+}

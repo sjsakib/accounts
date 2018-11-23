@@ -36,8 +36,8 @@ export const EntryTypes = {
 
 export const typeOptions = [
   { text: 'Note', value: EntryTypes.NOTE },
-  { text: 'Income', value: EntryTypes.IN },
-  { text: 'Expense', value: EntryTypes.OUT },
+  { text: 'In', value: EntryTypes.IN },
+  { text: 'Out', value: EntryTypes.OUT },
   { text: 'Due', value: EntryTypes.DUE },
   { text: 'Debt', value: EntryTypes.DEBT }
 ];
