@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { updateEntry, update } from '../actions';
-import { State, EntryTypes } from '../types';
+import { State, EntryTypes, typeOptions } from '../types';
 import { Modal, Form, Button, Message } from 'semantic-ui-react';
 
 interface Props {
@@ -17,7 +17,7 @@ interface FormState {
   name: string;
   nameError: string;
   type: string;
-  amount?: number;
+  amount: number;
   amountError: string;
   note: string;
 }
@@ -69,13 +69,7 @@ class EditEntry extends React.Component<Props, FormState> {
   render() {
     const { showModal, dispatch, modalLoading, modalMessage } = this.props;
     const { type, nameError, amountError } = this.state;
-    const typeOptions = [
-      { text: 'Note', value: EntryTypes.NOTE },
-      { text: 'Income', value: EntryTypes.IN },
-      { text: 'Expense', value: EntryTypes.OUT },
-      { text: 'Due', value: EntryTypes.DUE },
-      { text: 'Debt', value: EntryTypes.DEBT }
-    ];
+   
     return (
       <Modal size="tiny" open={showModal}>
         <Modal.Header>New Entry</Modal.Header>

@@ -4,9 +4,9 @@ import { match } from 'react-router';
 import Decorator from './Decorator';
 import EditEntry from './EditEntry';
 import Loading from './Loading';
-import { Section, State, EntryTypes } from '../types';
+import { Section, State, EntryTypes, typeOptions } from '../types';
 import { loadSection, update } from '../actions';
-import { Button, Message, Grid, Table } from 'semantic-ui-react';
+import { Button, Message, Grid, Table, Dropdown } from 'semantic-ui-react';
 
 interface Props {
   id: string;
@@ -17,7 +17,18 @@ interface Props {
   dispatch: (action: any) => void;
 }
 
-class SectionComponent extends React.Component<Props> {
+class SectionComponent extends React.Component<
+  Props,
+  { typeFilter: string; sortField: string; order: number }
+> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      typeFilter: 'ALL',
+      sortField: 'created',
+      order: -1
+    };
+  }
   componentDidMount() {
     this.load();
   }
@@ -43,6 +54,17 @@ class SectionComponent extends React.Component<Props> {
     }
   }
 
+  handleSort(field: string) {
+    let { sortField, order } = this.state;
+    if (sortField === field) {
+      order *= -1;
+    } else {
+      sortField = field;
+      order = -1;
+    }
+    this.setState({ sortField, order });
+  }
+
   render() {
     const {
       section,
@@ -58,38 +80,63 @@ class SectionComponent extends React.Component<Props> {
       return <Loading />;
     }
 
+    const { typeFilter, sortField, order } = this.state;
     const rows =
       entries &&
-      Object.keys(entries).map(k => {
-        const e = entries[k];
-        const created = e.created.toLocaleDateString('en-US', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        const warning = e.type === EntryTypes.OUT;
-        const negative = e.type === EntryTypes.DUE;
-        const positive = e.type === EntryTypes.IN;
-        const error = e.type === EntryTypes.DEBT;
+      Object.keys(entries)
+        .filter(k => typeFilter === 'ALL' || entries[k].type === typeFilter)
+        .sort(
+          (k1, k2) =>
+            entries[k1][sortField] < entries[k2][sortField]
+              ? -1 * order
+              : 1 * order
+        )
+        .map(k => {
+          const e = entries[k];
+          const created = e.created.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          const warning = e.type === EntryTypes.OUT;
+          const negative = e.type === EntryTypes.DUE;
+          const positive = e.type === EntryTypes.IN;
+          const error = e.type === EntryTypes.DEBT;
 
-        return (
-          <Table.Row
-            key={k}
-            warning={warning}
-            error={error}
-            positive={positive}
-            negative={negative}>
-            <Table.Cell>
-              {e.name} <br /> <small>{created}</small> <br />
-              <small>{e.note}</small>
-            </Table.Cell>
-            <Table.Cell>{e.type}</Table.Cell>
-            <Table.Cell>{e.amount ? e.amount : '--'}</Table.Cell>
-          </Table.Row>
-        );
-      });
+          return (
+            <Table.Row
+              key={k}
+              warning={warning}
+              error={error}
+              positive={positive}
+              negative={negative}>
+              <Table.Cell>
+                {e.name} <br /> <small>{created}</small> <br />
+                <small>{e.note}</small>
+              </Table.Cell>
+              <Table.Cell>{e.type}</Table.Cell>
+              <Table.Cell>{e.amount ? e.amount : '--'}</Table.Cell>
+            </Table.Row>
+          );
+        });
+
+    const total = entries
+      ? Object.keys(entries)
+          .filter(k => typeFilter === 'ALL' || entries[k].type === typeFilter)
+          .reduce((prev, cur) => {
+            const entry = entries[cur];
+            if (entry.type === EntryTypes.DUE || entry.type === EntryTypes.IN) {
+              return prev + entry.amount;
+            } else {
+              return prev - entry.amount;
+            }
+          }, 0)
+      : 0;
+
+    const filterOptions = [{ text: 'All', value: 'ALL' }, ...typeOptions];
+
     const emptyRow = emptyMessage ? (
       <Table.Row>
         <Table.Cell textAlign="center" colSpan="3">
@@ -117,15 +164,41 @@ class SectionComponent extends React.Component<Props> {
               <Table unstackable compact>
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell>Name</Table.HeaderCell>
-                    <Table.HeaderCell>Type</Table.HeaderCell>
-                    <Table.HeaderCell>Amount</Table.HeaderCell>
+                    <Table.HeaderCell
+                      className="cursor-pointer"
+                      onClick={() => this.handleSort('created')}>
+                      Info
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      Type:
+                      <Dropdown
+                        onChange={(e, v) =>
+                          this.setState({ typeFilter: v.value as string })
+                        }
+                        className="filter-dropdown"
+                        options={filterOptions}
+                        defaultValue={typeFilter}
+                      />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                      className="cursor-pointer"
+                      onClick={() => this.handleSort('amount')}>
+                      Amount
+                    </Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
                   {rows}
                   {emptyRow}
                 </Table.Body>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell colSpan="2" textAlign="right">
+                      Summary
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>{total}</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
               </Table>
             </Grid.Row>
             <EditEntry projectID={parentID} sectionID={id} />

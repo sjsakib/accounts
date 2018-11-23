@@ -29,3 +29,11 @@ body {
   text-align: center;
   bottom: 0;
 }
+
+.filter-dropdown {
+  margin-left: 10px;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
