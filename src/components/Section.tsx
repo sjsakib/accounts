@@ -5,7 +5,13 @@ import Decorator from './Decorator';
 import EditEntry from './EditEntry';
 import Loading from './Loading';
 import { Section, State, EntryTypes, typeOptions } from '../types';
-import { loadSection, update, deleteEntry, deleteSection } from '../actions';
+import {
+  loadSection,
+  update,
+  deleteEntry,
+  deleteSection,
+  clearEntry
+} from '../actions';
 import { Button, Message, Grid, Table, Dropdown } from 'semantic-ui-react';
 
 interface Props {
@@ -119,8 +125,15 @@ class SectionComponent extends React.Component<
                   <Dropdown.Menu>
                     <Dropdown.Item
                       onClick={() => dispatch(deleteEntry(parentID, id, k))}>
-                      Delete entry
+                      Delete Entry
                     </Dropdown.Item>
+                    {(e.type === EntryTypes.DUE ||
+                      e.type === EntryTypes.DEBT) && (
+                      <Dropdown.Item
+                        onClick={() => dispatch(clearEntry(parentID, id, k))}>
+                        Clear Entry
+                      </Dropdown.Item>
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
                 {e.type}
