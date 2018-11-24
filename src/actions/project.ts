@@ -86,6 +86,7 @@ export function loadProjects(
 ) {
   db.collection('projects').onSnapshot(query => {
     query.docChanges().forEach(change => {
+      if (change.type === 'removed') return;
       const id = change.doc.id;
       const { projects } = getState();
       let project = projects[id];
@@ -212,6 +213,7 @@ export function loadSections(projectID: string) {
           dispatch(update({emptyMessage: ''}));
         }
         query.docChanges().forEach(change => {
+          if (change.type === 'removed') return;
           const { projects } = getState();
           const project = projects[projectID];
           const id = change.doc.id;
@@ -254,6 +256,7 @@ export function loadEntries(projectID: string, sectionID: string) {
           dispatch(update({emptyMessage: ''}));
         }
         query.docChanges().forEach(change => {
+          if (change.type === 'removed') return;
           const id = change.doc.id;
           const { projects } = getState();
           const project = projects[projectID];
