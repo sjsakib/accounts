@@ -59,7 +59,7 @@ class ProjectComponent extends React.Component<
         title={project ? project.name : 'Error'}
         menuItems={
           <Dropdown.Item onClick={() => this.setState({ delete: true })}>
-            Delete project
+            Delete Project
           </Dropdown.Item>
         }>
         {pMessage ? (

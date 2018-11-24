@@ -5,7 +5,7 @@ import Decorator from './Decorator';
 import EditEntry from './EditEntry';
 import Loading from './Loading';
 import { Section, State, EntryTypes, typeOptions } from '../types';
-import { loadSection, update } from '../actions';
+import { loadSection, update, deleteEntry, deleteSection } from '../actions';
 import { Button, Message, Grid, Table, Dropdown } from 'semantic-ui-react';
 
 interface Props {
@@ -114,7 +114,17 @@ class SectionComponent extends React.Component<
                 {e.name} <br /> <small>{created}</small> <br />
                 <small>{e.note}</small>
               </Table.Cell>
-              <Table.Cell>{e.type}</Table.Cell>
+              <Table.Cell>
+                <Dropdown icon="setting">
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={() => dispatch(deleteEntry(parentID, id, k))}>
+                      Delete entry
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+                {e.type}
+              </Table.Cell>
               <Table.Cell>{e.amount ? e.amount : '--'}</Table.Cell>
             </Table.Row>
           );
@@ -145,8 +155,16 @@ class SectionComponent extends React.Component<
       ''
     );
 
+    const sortDirection = order === -1 ? 'descending' : 'ascending';
+
     return (
-      <Decorator title={section ? section.name : 'Error'}>
+      <Decorator
+        title={section ? section.name : 'Error'}
+        menuItems={
+          <Dropdown.Item onClick={() => dispatch(deleteSection(parentID, id))}>
+            Delete Section
+          </Dropdown.Item>
+        }>
         {pMessage ? (
           <Message error content={pMessage} />
         ) : (
@@ -159,11 +177,13 @@ class SectionComponent extends React.Component<
                   onClick={() => dispatch(update({ showModal: true }))}
                 />
               </Grid.Row>
-              <Table unstackable compact>
+              <Table unstackable compact sortable celled>
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell
-                      className="cursor-pointer"
+                      sorted={
+                        sortField === 'created' ? sortDirection : undefined
+                      }
                       onClick={() => this.handleSort('created')}>
                       Info
                     </Table.HeaderCell>
@@ -179,7 +199,9 @@ class SectionComponent extends React.Component<
                       />
                     </Table.HeaderCell>
                     <Table.HeaderCell
-                      className="cursor-pointer"
+                      sorted={
+                        sortField === 'amount' ? sortDirection : undefined
+                      }
                       onClick={() => this.handleSort('amount')}>
                       Amount
                     </Table.HeaderCell>
