@@ -6,6 +6,7 @@ export interface User {
 
 export interface Project {
   name: string;
+  owner: string;
   sections: {
     [key: string]: Section;
   };

@@ -12,6 +12,12 @@ export function createProject(name: string, parentProject?: string) {
     dispatch(update({ modalLoading: true }));
     const id = slugify(name.toLowerCase());
 
+    const data: any = { name };
+    const user = getState().user;
+    if (!parentProject && user) {
+      data.owner = user.uid;
+    }
+
     const ref = parentProject
       ? db
           .collection('projects')
@@ -26,8 +32,8 @@ export function createProject(name: string, parentProject?: string) {
         if (res.exists) {
           const modalMessage = `${
             !parentProject ? 'Project' : 'Section'
-          } with same name already exists${parentProject &&
-            ' under this project'}`;
+          } with same name already exists ${parentProject ?
+            ' under this project' : ''}`;
           dispatch(
             update({
               modalMessage,
@@ -36,9 +42,7 @@ export function createProject(name: string, parentProject?: string) {
           );
         } else {
           ref
-            .set({
-              name
-            })
+            .set(data)
             .then(() => {
               dispatch(
                 update({
@@ -70,9 +74,9 @@ export function createProject(name: string, parentProject?: string) {
         dispatch(
           update({
             modalMessage:
-              `Couldn't save project. ${
+              `Couldn't save ${
                 !parentProject ? 'project' : 'section'
-              }.` + error.message,
+              }. ` + error.message,
             modalLoading: false
           })
         );
@@ -84,22 +88,26 @@ export function loadProjects(
   dispatch: Dispatch<Action>,
   getState: () => State
 ) {
-  db.collection('projects').onSnapshot(query => {
-    query.docChanges().forEach(change => {
-      if (change.type === 'removed') return;
-      const id = change.doc.id;
-      const { projects } = getState();
-      let project = projects[id];
-      const data = change.doc.data();
-      if (!project) project = data as Project;
+  const user = getState().user;
+  db
+    .collection('projects')
+    .where('owner', '==', user!.uid)
+    .onSnapshot(query => {
+      query.docChanges().forEach(change => {
+        if (change.type === 'removed') return;
+        const id = change.doc.id;
+        const { projects } = getState();
+        let project = projects[id];
+        const data = change.doc.data();
+        if (!project) project = data as Project;
 
-      dispatch(
-        update({
-          projects: { ...projects, ...{ [id]: { ...project, ...data } } }
-        })
-      );
+        dispatch(
+          update({
+            projects: { ...projects, ...{ [id]: { ...project, ...data } } }
+          })
+        );
+      });
     });
-  });
 }
 
 export function loadProject(projectID: string) {
@@ -208,9 +216,9 @@ export function loadSections(projectID: string) {
       .collection('sections')
       .onSnapshot(query => {
         if (query.empty) {
-          dispatch(update({emptyMessage: 'No Section so far'}));
+          dispatch(update({ emptyMessage: 'No Section so far' }));
         } else {
-          dispatch(update({emptyMessage: ''}));
+          dispatch(update({ emptyMessage: '' }));
         }
         query.docChanges().forEach(change => {
           if (change.type === 'removed') return;
@@ -251,9 +259,9 @@ export function loadEntries(projectID: string, sectionID: string) {
       .collection('entries')
       .onSnapshot(query => {
         if (query.empty) {
-          dispatch(update({emptyMessage: 'No entries so far'}));
+          dispatch(update({ emptyMessage: 'No entries so far' }));
         } else {
-          dispatch(update({emptyMessage: ''}));
+          dispatch(update({ emptyMessage: '' }));
         }
         query.docChanges().forEach(change => {
           if (change.type === 'removed') return;
