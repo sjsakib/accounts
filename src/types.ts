@@ -7,6 +7,11 @@ export interface User {
 export interface Project {
   name: string;
   owner: string;
+  in: number,
+  out: number,
+  debt: number,
+  due: number,
+  edited: Date,
   sections: {
     [key: string]: Section;
   };
@@ -14,6 +19,11 @@ export interface Project {
 
 export interface Section {
   name: string;
+  in: number,
+  out: number,
+  debt: number,
+  due: number,
+  edited: Date,
   entries: {
     [key: string]: Entry;
   };

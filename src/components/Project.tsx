@@ -7,7 +7,15 @@ import CreateProject from './CreateProject';
 import Loading from './Loading';
 import { Project, State } from '../types';
 import { loadProject, update, deleteProject } from '../actions';
-import { Button, Grid, Card, Dropdown, Confirm, Message } from 'semantic-ui-react';
+import {
+  Button,
+  Grid,
+  Card,
+  Dropdown,
+  Confirm,
+  Message,
+  Label
+} from 'semantic-ui-react';
 
 interface ProjectProps {
   id: string;
@@ -21,7 +29,7 @@ class ProjectComponent extends React.Component<
   ProjectProps,
   { delete?: boolean }
 > {
-  state = { delete: false}
+  state = { delete: false };
   componentDidMount() {
     this.load();
   }
@@ -77,15 +85,33 @@ class ProjectComponent extends React.Component<
             </Grid.Row>
             <Grid.Column textAlign="center">
               {sections &&
-                Object.keys(sections).map(k => (
-                  <Card
-                    key={k}
-                    as={Link}
-                    to={`/project/${id}/${k}`}
-                    header={sections[k].name}
-                    fluid
-                  />
-                ))}
+                Object.keys(sections)
+                  .sort(
+                    (k1, k2) =>
+                      sections[k1].edited < sections[k2].edited ? 1 : -1
+                  )
+                  .map(k => (
+                    <Card key={k} as={Link} to={`/project/${id}/${k}`} fluid>
+                      <Card.Content
+                        textAlign="center"
+                        header={sections[k].name}
+                      />
+                      <Card.Content textAlign="center" extra>
+                        <Label>
+                          In <Label.Detail>{sections[k].in}</Label.Detail>
+                        </Label>
+                        <Label>
+                          Out <Label.Detail>{sections[k].out}</Label.Detail>
+                        </Label>
+                        <Label>
+                          Debt <Label.Detail>{sections[k].debt}</Label.Detail>
+                        </Label>
+                        <Label>
+                          Due <Label.Detail>{sections[k].due}</Label.Detail>
+                        </Label>
+                      </Card.Content>
+                    </Card>
+                  ))}
               {emptyMessage}
             </Grid.Column>
             <CreateProject parentProject={id} />

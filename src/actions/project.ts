@@ -12,7 +12,14 @@ export function createProject(name: string, parentProject?: string) {
     dispatch(update({ modalLoading: true }));
     const id = slugify(name.toLowerCase());
 
-    const data: any = { name };
+    const data: Partial<Project> = {
+      name,
+      edited: new Date(),
+      in: 0,
+      out: 0,
+      due: 0,
+      debt: 0
+    };
     const user = getState().user;
     if (!parentProject && user) {
       data.owner = user.uid;
@@ -32,8 +39,9 @@ export function createProject(name: string, parentProject?: string) {
         if (res.exists) {
           const modalMessage = `${
             !parentProject ? 'Project' : 'Section'
-          } with same name already exists ${parentProject ?
-            ' under this project' : ''}`;
+          } with same name already exists ${
+            parentProject ? ' under this project' : ''
+          }`;
           dispatch(
             update({
               modalMessage,
@@ -74,9 +82,8 @@ export function createProject(name: string, parentProject?: string) {
         dispatch(
           update({
             modalMessage:
-              `Couldn't save ${
-                !parentProject ? 'project' : 'section'
-              }. ` + error.message,
+              `Couldn't save ${!parentProject ? 'project' : 'section'}. ` +
+              error.message,
             modalLoading: false
           })
         );
@@ -99,6 +106,7 @@ export function loadProjects(
         const { projects } = getState();
         let project = projects[id];
         const data = change.doc.data();
+        data.edited = data.edited.toDate();
         if (!project) project = data as Project;
 
         dispatch(
@@ -121,8 +129,10 @@ export function loadProject(projectID: string) {
       .then(res => {
         if (res.exists) {
           let project = getState().projects[projectID];
-          if (!project) project = res.data() as Project;
-          else project = { ...project, ...res.data() };
+          const data = res.data();
+          data!.edited = data!.edited.toDate();
+          if (!project) project = data as Project;
+          else project = { ...project, ...data };
           dispatch(
             update({
               projects: {
@@ -158,7 +168,9 @@ export function loadSection(id: string, parentID: string) {
           dispatch(pMessage("Project doesn't exits"));
           return;
         } else {
-          project = projectData.data() as Project;
+          const data = projectData.data()
+          data!.edited = data!.edited.toDate();
+          project = data as Project;
         }
       } catch (e) {
         dispatch(pMessage("Couldn't load section"));
@@ -176,6 +188,7 @@ export function loadSection(id: string, parentID: string) {
           return;
         }
         const data = res.data();
+        data!.edited = data!.edited.toDate();
         let section = project.sections && project.sections[id];
         if (!section) section = data as Section;
         else section = { ...section, ...data };
@@ -228,6 +241,7 @@ export function loadSections(projectID: string) {
           const sections = project && project.sections;
           let section = sections && sections[id];
           const data = change.doc.data();
+          data.edited = data.edited.toDate();
           if (!section) section = data as Section;
           else section = { ...section, ...data };
 

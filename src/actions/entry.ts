@@ -13,19 +13,17 @@ export function updateEntry(
 ) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
     dispatch(update({ modalLoading: true }));
-    const ref = db
-      .collection('projects')
-      .doc(projectID)
-      .collection('sections')
-      .doc(sectionID);
+    const projectRef = db.collection('projects').doc(projectID);
+    const sectionRef = projectRef.collection('sections').doc(sectionID);
 
-    ref
+    sectionRef
       .get()
       .then(res => {
         if (res.exists) {
           const entryRef = entryID
-            ? ref.collection('entries').doc(entryID)
-            : ref.collection('entries').doc();
+            ? sectionRef.collection('entries').doc(entryID)
+            : sectionRef.collection('entries').doc();
+
           entryRef
             .set(entry, { merge: true })
             .then(() => {
@@ -36,6 +34,51 @@ export function updateEntry(
                   modalLoading: false
                 })
               );
+              if (entry.type === EntryTypes.NOTE) return;
+              db.runTransaction(t => {
+                return t.get(projectRef).then(res => {
+                  const data = res.data();
+                  if (!data) return;
+                  data.edited = new Date();
+                  switch (entry.type) {
+                    case EntryTypes.DUE:
+                      data.due = data.due + entry.amount;
+                      break;
+                    case EntryTypes.DEBT:
+                      data.debt = data.debt + entry.amount;
+                      break;
+                    case EntryTypes.IN:
+                      data.in = data.in + entry.amount;
+                      break;
+                    case EntryTypes.OUT:
+                      data.out = data.out + entry.amount;
+                      break;
+                  }
+                  t.update(projectRef, data);
+                });
+              });
+              db.runTransaction(t => {
+                return t.get(sectionRef).then(res => {
+                  const data = res.data();
+                  if (!data) return;
+                  data.edited = new Date();
+                  switch (entry.type) {
+                    case EntryTypes.DUE:
+                      data.due = data.due + entry.amount;
+                      break;
+                    case EntryTypes.DEBT:
+                      data.debt = data.debt + entry.amount;
+                      break;
+                    case EntryTypes.IN:
+                      data.in = data.in + entry.amount;
+                      break;
+                    case EntryTypes.OUT:
+                      data.out = data.out + entry.amount;
+                      break;
+                  }
+                  t.update(sectionRef, data);
+                });
+              });
             })
             .catch(error => {
               dispatch(
@@ -87,15 +130,50 @@ export function clearEntry(
       } else if (entry.type === EntryTypes.DEBT) {
         type = EntryTypes.OUT;
       }
-      firebase
+
+      const projectRef = firebase
         .firestore()
         .collection('projects')
-        .doc(projectID)
-        .collection('sections')
-        .doc(sectionID)
+        .doc(projectID);
+
+      const sectionRef = projectRef.collection('sections').doc(sectionID);
+      
+      sectionRef
         .collection('entries')
         .doc(entryID)
-        .set({ type }, { merge: true });
+        .set({ type }, { merge: true })
+        .then(() => {
+          db.runTransaction(t => {
+            return t.get(projectRef).then(res => {
+              const data = res.data();
+              if (!data) return;
+              data.edited = new Date();
+              if (entry.type === EntryTypes.DUE) {
+                data.due -= entry.amount;
+                data.in += entry.amount;
+              } else if (entry.type === EntryTypes.DEBT) {
+                data.debt -= entry.amount;
+                data.out += entry.amount;
+              }
+              t.update(projectRef, data);
+            });
+          });
+          db.runTransaction(t => {
+            return t.get(sectionRef).then(res => {
+              const data = res.data();
+              if (!data) return;
+              data.edited = new Date();
+              if (entry.type === EntryTypes.DUE) {
+                data.due -= entry.amount;
+                data.in += entry.amount;
+              } else if (entry.type === EntryTypes.DEBT) {
+                data.debt -= entry.amount;
+                data.out += entry.amount;
+              }
+              t.update(sectionRef, data);
+            });
+          });
+        });
     } catch (e) {
       console.log(e);
       return;

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Decorator from './Decorator';
 import { State, Project } from '../types';
 import { update, loadProjects } from '../actions';
-import { Button, Grid, Card } from 'semantic-ui-react';
+import { Button, Grid, Card, Label } from 'semantic-ui-react';
 import CreateProject from './CreateProject';
 
 class Home extends React.Component<HomeProps> {
@@ -26,15 +26,29 @@ class Home extends React.Component<HomeProps> {
             </Grid.Column>
           </Grid.Row>
           <Grid.Column>
-            {Object.keys(projects).map(k => (
-              <Card
-                key={k}
-                as={Link}
-                to={`project/${k}`}
-                header={projects[k].name}
-                fluid
-              />
-            ))}
+            {Object.keys(projects)
+              .sort(
+                (k1, k2) => (projects[k1].edited < projects[k2].edited ? 1 : -1)
+              )
+              .map(k => (
+                <Card key={k} as={Link} to={`project/${k}`} fluid>
+                  <Card.Content textAlign="center" header={projects[k].name} />
+                  <Card.Content textAlign="center" extra>
+                    <Label>
+                      In <Label.Detail>{projects[k].in}</Label.Detail>
+                    </Label>
+                    <Label>
+                      Out <Label.Detail>{projects[k].out}</Label.Detail>
+                    </Label>
+                    <Label>
+                      Debt <Label.Detail>{projects[k].debt}</Label.Detail>
+                    </Label>
+                    <Label>
+                      Due <Label.Detail>{projects[k].due}</Label.Detail>
+                    </Label>
+                  </Card.Content>
+                </Card>
+              ))}
           </Grid.Column>
         </Grid>
         <CreateProject />
