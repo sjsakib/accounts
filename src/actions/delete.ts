@@ -6,6 +6,11 @@ import { State, EntryTypes } from '../types';
 
 export function deleteProject(projectID: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
+    const sections = getState().projects[projectID].sections;
+    if (sections && Object.keys(sections).length !== 0) {
+      window.alert("Project is not empty. Can't delete.");
+      return;
+    }
     firebase
       .firestore()
       .collection('projects')
@@ -22,7 +27,9 @@ export function deleteProject(projectID: string) {
 
 export function deleteSection(projectID: string, sectionID: string) {
   return function(dispatch: Dispatch<Action>, getState: () => State) {
-    if (!window.confirm('Sure to delete sections with all entries?')) {
+    const entries = getState().projects[projectID].sections[sectionID].entries;
+    if (entries && Object.keys(entries).length !== 0) {
+      window.alert("Section is not empty. Can't delete.");
       return;
     }
     firebase
