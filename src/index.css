@@ -45,3 +45,15 @@ body {
 .pre-line {
   white-space: pre-line;
 }
+
+@media print {
+  i.icon {
+    display: none !important;
+  }
+  table {
+    width: 90% !important;
+  }
+  div.menu {
+    display: none !important;
+  }
+}

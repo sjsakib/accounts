@@ -17,6 +17,7 @@ import { Button, Message, Grid, Table, Dropdown } from 'semantic-ui-react';
 interface Props {
   id: string;
   parentID: string;
+  parentName?: string;
   pMessage?: string;
   emptyMessage: string;
   section?: Section;
@@ -42,8 +43,10 @@ class SectionComponent extends React.Component<
     if (id !== this.props.id || parentID !== this.props.parentID) {
       this.load();
     }
-    if (this.props.section) {
-      document.title = this.props.section.name + " | Prodhan's Trading Accounts";
+    const { section, parentName } = this.props;
+    if (section) {
+      document.title = `${section.name} | ${parentName ||
+        ''} | Prodhan's Trading Accounts`;
     }
   }
 
@@ -255,7 +258,8 @@ const mapStateToProps = (
     parentID,
     id,
     pMessage,
-    emptyMessage
+    emptyMessage,
+    parentName: projects[parentID] && projects[parentID].name
   };
 };
 
