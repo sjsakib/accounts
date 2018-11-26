@@ -37,6 +37,9 @@ class ProjectComponent extends React.Component<
     if (id !== this.props.id) {
       this.load();
     }
+    if (this.props.project) {
+      document.title = this.props.project.name + " | Prodhan's Trading Accounts";
+    }
   }
 
   componentWillUnmount() {

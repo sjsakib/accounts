@@ -42,6 +42,9 @@ class SectionComponent extends React.Component<
     if (id !== this.props.id || parentID !== this.props.parentID) {
       this.load();
     }
+    if (this.props.section) {
+      document.title = this.props.section.name + " | Prodhan's Trading Accounts";
+    }
   }
 
   componentWillUnmount() {

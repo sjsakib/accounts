@@ -7,7 +7,6 @@ import reducer from './reducers';
 import App from './App';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
-import registerServiceWorker from './registerServiceWorker';
 
 const store = createStore(reducer, applyMiddleware(thunk));
 
@@ -17,4 +16,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
-registerServiceWorker();
