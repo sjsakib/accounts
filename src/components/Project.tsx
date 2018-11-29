@@ -7,6 +7,7 @@ import CreateProject from './CreateProject';
 import Loading from './Loading';
 import { Project, State } from '../types';
 import { loadProject, update, deleteProject } from '../actions';
+import formatNumber from '../lib/formatNumber';
 import {
   Button,
   Grid,
@@ -101,16 +102,16 @@ class ProjectComponent extends React.Component<
                       />
                       <Card.Content textAlign="center" extra>
                         <Label>
-                          In <Label.Detail>{sections[k].in}</Label.Detail>
+                          In <Label.Detail>{formatNumber(sections[k].in)}</Label.Detail>
                         </Label>
                         <Label>
-                          Out <Label.Detail>{sections[k].out}</Label.Detail>
+                          Out <Label.Detail>{formatNumber(sections[k].out)}</Label.Detail>
                         </Label>
                         <Label>
-                          Debt <Label.Detail>{sections[k].debt}</Label.Detail>
+                          Debt <Label.Detail>{formatNumber(sections[k].debt)}</Label.Detail>
                         </Label>
                         <Label>
-                          Due <Label.Detail>{sections[k].due}</Label.Detail>
+                          Due <Label.Detail>{formatNumber(sections[k].due)}</Label.Detail>
                         </Label>
                       </Card.Content>
                     </Card>

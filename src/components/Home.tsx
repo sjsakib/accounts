@@ -6,6 +6,7 @@ import { State, Project } from '../types';
 import { update, loadProjects } from '../actions';
 import { Button, Grid, Card, Label } from 'semantic-ui-react';
 import CreateProject from './CreateProject';
+import formatNumber from '../lib/formatNumber';
 
 class Home extends React.Component<HomeProps> {
   componentDidMount() {
@@ -36,16 +37,16 @@ class Home extends React.Component<HomeProps> {
                   <Card.Content textAlign="center" header={projects[k].name} />
                   <Card.Content textAlign="center" extra>
                     <Label>
-                      In <Label.Detail>{projects[k].in}</Label.Detail>
+                      In <Label.Detail>{formatNumber(projects[k].in)}</Label.Detail>
                     </Label>
                     <Label>
-                      Out <Label.Detail>{projects[k].out}</Label.Detail>
+                      Out <Label.Detail>{formatNumber(projects[k].out)}</Label.Detail>
                     </Label>
                     <Label>
-                      Debt <Label.Detail>{projects[k].debt}</Label.Detail>
+                      Debt <Label.Detail>{formatNumber(projects[k].debt)}</Label.Detail>
                     </Label>
                     <Label>
-                      Due <Label.Detail>{projects[k].due}</Label.Detail>
+                      Due <Label.Detail>{formatNumber(projects[k].due)}</Label.Detail>
                     </Label>
                   </Card.Content>
                 </Card>

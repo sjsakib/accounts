@@ -12,6 +12,7 @@ import {
   deleteSection,
   clearEntry
 } from '../actions';
+import formatNumber from '../lib/formatNumber';
 import { Button, Message, Grid, Table, Dropdown } from 'semantic-ui-react';
 
 interface Props {
@@ -144,7 +145,7 @@ class SectionComponent extends React.Component<
                 </Dropdown>
                 {e.type}
               </Table.Cell>
-              <Table.Cell>{e.amount ? e.amount : '--'}</Table.Cell>
+              <Table.Cell>{e.amount ? formatNumber(e.amount) : '--'}</Table.Cell>
             </Table.Row>
           );
         });
@@ -235,7 +236,7 @@ class SectionComponent extends React.Component<
                     <Table.HeaderCell colSpan="2" textAlign="right">
                       Summary:
                     </Table.HeaderCell>
-                    <Table.HeaderCell>{total}</Table.HeaderCell>
+                    <Table.HeaderCell>{formatNumber(total)}</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
               </Table>
