@@ -33,6 +33,10 @@ class CreateProject extends React.Component<Props, { name: string }> {
     this.props.dispatch(update({ modalMessage: '' }));
   }
 
+  clearState = () => {
+    this.setState({name: ''});
+  }
+
   render() {
     const {
       showModal,
@@ -42,7 +46,7 @@ class CreateProject extends React.Component<Props, { name: string }> {
       parentProject
     } = this.props;
     return (
-      <Modal size="tiny" open={showModal}>
+      <Modal size="tiny" open={showModal} onMount={this.clearState}>
         <Modal.Header>Add a new {!parentProject ? 'project' : 'section'}</Modal.Header>
         <Modal.Content>
           <Form

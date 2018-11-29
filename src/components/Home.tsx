@@ -10,6 +10,7 @@ import CreateProject from './CreateProject';
 class Home extends React.Component<HomeProps> {
   componentDidMount() {
     this.props.dispatch(loadProjects);
+    document.title = "Prodhan's Trading Accounts";
   }
   render() {
     const { dispatch, projects } = this.props;

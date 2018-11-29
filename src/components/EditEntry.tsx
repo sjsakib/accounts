@@ -37,6 +37,17 @@ class EditEntry extends React.Component<Props, FormState> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  clearState = () => {
+    this.setState({
+      name: '',
+      nameError: '',
+      type: EntryTypes.OUT,
+      amount: 0,
+      amountError: '',
+      note: ''
+    });
+  }
+
   clearError() {
     this.props.dispatch(update({ modalMessage: '' }));
   }
@@ -67,11 +78,11 @@ class EditEntry extends React.Component<Props, FormState> {
   }
 
   render() {
-    const { showModal, dispatch, modalLoading, modalMessage } = this.props;
+    const { showModal, dispatch, modalLoading, modalMessage, } = this.props;
     const { type, nameError, amountError } = this.state;
-   
+
     return (
-      <Modal size="tiny" open={showModal}>
+      <Modal size="tiny" open={showModal} onMount={this.clearState}>
         <Modal.Header>New Entry</Modal.Header>
         <Modal.Content>
           <Form
