@@ -15,4 +15,9 @@ firebase.initializeApp(config);
 const settings = { timestampsInSnapshots: true };
 firebase.firestore().settings(settings);
 
+firebase.firestore().enablePersistence().catch(reason => {
+  console.log(reason);
+  window.alert('Failed to enable offline persistence');
+});
+
 export default firebase;
