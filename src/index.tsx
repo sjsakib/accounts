@@ -5,6 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
 import App from './App';
+import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
@@ -16,3 +17,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
+
+registerServiceWorker();
