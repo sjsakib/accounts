@@ -74,83 +74,80 @@ export function deleteEntry(
     sectionRef
       .collection('entries')
       .doc(entryID)
-      .delete()
-      .then(() => {
-        try {
-          const projects = getState().projects;
-          const project = projects[projectID];
-          const sections = project.sections;
-          const section = sections[sectionID];
-          const entries = {
-            ...section.entries
-          };
-          const entry = entries[entryID];
-          delete entries[entryID];
-          dispatch(
-            update({
-              projects: {
-                ...projects,
+      .delete();
+
+    try {
+      const projects = getState().projects;
+      const project = projects[projectID];
+      const sections = project.sections;
+      const section = sections[sectionID];
+      const entries = {
+        ...section.entries
+      };
+      const entry = entries[entryID];
+      delete entries[entryID];
+      dispatch(
+        update({
+          projects: {
+            ...projects,
+            ...{
+              [projectID]: {
+                ...project,
                 ...{
-                  [projectID]: {
-                    ...project,
-                    ...{
-                      sections: {
-                        ...sections,
-                        ...{ [sectionID]: { ...section, ...{ entries } } }
-                      }
-                    }
+                  sections: {
+                    ...sections,
+                    ...{ [sectionID]: { ...section, ...{ entries } } }
                   }
                 }
               }
-            })
-          );
-          firebase.firestore().runTransaction(t => {
-            return t.get(projectRef).then(res => {
-              const data = res.data();
-              if (!data) return;
-              data.edited = new Date();
-              switch (entry.type) {
-                case EntryTypes.DUE:
-                  data.due -= entry.amount;
-                  break;
-                case EntryTypes.DEBT:
-                  data.debt -= entry.amount;
-                  break;
-                case EntryTypes.IN:
-                  data.in -= entry.amount;
-                  break;
-                case EntryTypes.OUT:
-                  data.out -= entry.amount;
-                  break;
-              }
-              t.update(projectRef, data);
-            });
-          });
-          firebase.firestore().runTransaction(t => {
-            return t.get(sectionRef).then(res => {
-              const data = res.data();
-              if (!data) return;
-              data.edited = new Date();
-              switch (entry.type) {
-                case EntryTypes.DUE:
-                  data.due -= entry.amount;
-                  break;
-                case EntryTypes.DEBT:
-                  data.debt -= entry.amount;
-                  break;
-                case EntryTypes.IN:
-                  data.in -= entry.amount;
-                  break;
-                case EntryTypes.OUT:
-                  data.out -= entry.amount;
-                  break;
-              }
-              t.update(sectionRef, data);
-            });
-          });
-        } catch (e) {
-          console.log(e);
+            }
+          }
+        })
+      );
+
+      projectRef.get().then(res => {
+        const data = res.data();
+        if (!data) return;
+        data.edited = new Date();
+        switch (entry.type) {
+          case EntryTypes.DUE:
+            data.due -= entry.amount;
+            break;
+          case EntryTypes.DEBT:
+            data.debt -= entry.amount;
+            break;
+          case EntryTypes.IN:
+            data.in -= entry.amount;
+            break;
+          case EntryTypes.OUT:
+            data.out -= entry.amount;
+            break;
         }
+        projectRef.update(data);
       });
+
+      sectionRef.get().then(res => {
+        const data = res.data();
+        if (!data) return;
+        data.edited = new Date();
+        switch (entry.type) {
+          case EntryTypes.DUE:
+            data.due -= entry.amount;
+            break;
+          case EntryTypes.DEBT:
+            data.debt -= entry.amount;
+            break;
+          case EntryTypes.IN:
+            data.in -= entry.amount;
+            break;
+          case EntryTypes.OUT:
+            data.out -= entry.amount;
+            break;
+        }
+        sectionRef.update(data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 }
